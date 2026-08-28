@@ -10,7 +10,7 @@ An AI image generation studio built on [Pollinations](https://pollinations.ai). 
 
 - Prompt-to-image generation with 6 models: Flux, Dreamshaper, Klein, GPT Image 2, Zimage, Nanobanana
 - Sizes: 1024×1024, 1024×768, 768×1024, 512×512
-- One-click login via Pollinations account authorization (no manual API keys)
+- One-click login via Pollinations account authorization
 - Local generation history, download, copy URL, share
 
 ## Try it
