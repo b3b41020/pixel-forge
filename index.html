@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pixel Forge — AI Image Studio | pollinations.ai</title>
+<meta name="description" content="Generate stunning AI images with Pixel Forge, powered by Pollinations.">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);min-height:100vh;color:#e0e0e0;display:flex;flex-direction:column;align-items:center;padding:20px}
+.container{max-width:960px;width:100%}
+header{text-align:center;padding:40px 0 30px}
+header h1{font-size:2.5rem;background:linear-gradient(90deg,#f7971e,#ffd200);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+header p{color:#a0a0b0;margin-top:8px;font-size:1rem}
+header .badge{display:inline-block;margin-top:8px;font-size:.75rem;color:#888;background:rgba(255,255,255,.05);padding:4px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.08)}
+/* login card */
+#login-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:40px;text-align:center;max-width:420px;margin:60px auto}
+#login-card h2{font-size:1.2rem;margin-bottom:12px}
+#login-card p{color:#a0a0b0;font-size:.9rem;margin-bottom:24px;line-height:1.5}
+.login-btn{display:inline-flex;align-items:center;gap:10px;background:linear-gradient(90deg,#667eea,#764ba2);color:#fff;border:none;padding:14px 32px;border-radius:12px;font-size:1rem;font-weight:600;cursor:pointer;transition:transform .15s,box-shadow .2s}
+.login-btn:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(102,126,234,.4)}
+.login-btn:active{transform:translateY(0)}
+.login-btn svg{width:20px;height:20px;fill:currentColor}
+/* workspace */
+#workspace{display:none;gap:24px;flex-direction:column}
+.control-panel{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:24px}
+.control-row{display:flex;gap:12px;flex-wrap:wrap;align-items:end}
+.control-row .field{flex:1;min-width:200px}
+.control-row label{display:block;font-size:.8rem;color:#a0a0b0;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px}
+.control-row input,.control-row select{width:100%;padding:10px 14px;border-radius:10px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.08);color:#e0e0e0;font-size:.95rem;outline:none;transition:border .2s}
+.control-row input:focus,.control-row select:focus{border-color:#667eea}
+.control-row select option{background:#302b63;color:#e0e0e0}
+.gen-btn{background:linear-gradient(90deg,#f7971e,#ffd200);color:#1a1a2e;border:none;padding:10px 28px;border-radius:10px;font-size:1rem;font-weight:700;cursor:pointer;transition:transform .15s,box-shadow .2s;white-space:nowrap;height:42px;display:flex;align-items:center;gap:8px}
+.gen-btn:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(247,151,30,.35)}
+.gen-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.gen-btn.loading{pointer-events:none}
+.spinner{display:none;width:18px;height:18px;border:2px solid rgba(26,26,46,.3);border-top-color:#1a1a2e;border-radius:50%;animation:spin .6s linear infinite}
+.gen-btn.loading .spinner{display:inline-block}
+.gen-btn.loading .btn-text{display:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* result */
+.result-area{display:none;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:24px;text-align:center}
+.result-area.show{display:block}
+.result-area img{max-width:100%;max-height:480px;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,.3);margin-bottom:12px}
+.result-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.result-actions button{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);color:#e0e0e0;padding:8px 18px;border-radius:8px;font-size:.85rem;cursor:pointer;transition:background .2s}
+.result-actions button:hover{background:rgba(255,255,255,.18)}
+.result-actions .dl-btn{background:#667eea;border-color:#667eea;color:#fff}
+.result-actions .dl-btn:hover{background:#5a6fd6}
+/* user info */
+.user-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;flex-wrap:wrap}
+.user-info{display:flex;align-items:center;gap:10px;font-size:.85rem;color:#a0a0b0}
+.user-info img{width:28px;height:28px;border-radius:50%;border:2px solid rgba(255,255,255,.1)}
+.logout-btn{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:#a0a0b0;padding:6px 14px;border-radius:8px;font-size:.8rem;cursor:pointer;transition:background .2s}
+.logout-btn:hover{background:rgba(255,255,255,.14);color:#e0e0e0}
+/* footer */
+footer{text-align:center;padding:30px 0;color:#666;font-size:.8rem;margin-top:auto}
+footer a{color:#667eea;text-decoration:none}
+footer a:hover{text-decoration:underline}
+/* responsive */
+@media(max-width:600px){header h1{font-size:1.8rem}.control-row .field{min-width:100%}}
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>✦ Pixel Forge</h1>
+    <p>AI image generation studio — powered by Pollinations</p>
+    <span class="badge">⚡ Built with pollinations.ai</span>
+  </header>
+
+  <!-- Login Card -->
+  <div id="login-card">
+    <h2>🔑 Get Started</h2>
+    <p>Connect your Pollinations account to start generating. No API key needed — just a one-click authorization.</p>
+    <button class="login-btn" onclick="login()">
+      <svg viewBox="0 0 20 20"><path d="M10 0C4.5 0 0 4.5 0 10s4.5 10 10 10 10-4.5 10-10S15.5 0 10 0zm3.5 7.5l-5 5L5 9l1.5-1.5 2.5 2.5 3.5-3.5L13.5 7.5z"/></svg>
+      Login with Pollinations
+    </button>
+  </div>
+
+  <!-- Workspace -->
+  <div id="workspace">
+    <div class="user-bar">
+      <div class="user-info" id="user-info"></div>
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+
+    <div class="control-panel">
+      <div class="control-row">
+        <div class="field">
+          <label>Prompt</label>
+          <input type="text" id="prompt" placeholder="A majestic dragon in a cyberpunk city..." value="Friendly red panda in a forest">
+        </div>
+        <div class="field" style="flex:0 0 160px;min-width:120px">
+          <label>Model</label>
+          <select id="model">
+            <option value="flux">Flux</option>
+            <option value="dreamshaper">Dreamshaper</option>
+            <option value="klein">Klein</option>
+            <option value="gpt-image-2">GPT Image 2</option>
+            <option value="zimage">Zimage</option>
+            <option value="nanobanana">Nanobanana</option>
+          </select>
+        </div>
+        <div class="field" style="flex:0 0 140px;min-width:100px">
+          <label>Size</label>
+          <select id="size">
+            <option value="1024x1024">1024×1024</option>
+            <option value="1024x768">1024×768</option>
+            <option value="768x1024">768×1024</option>
+            <option value="512x512">512×512</option>
+          </select>
+        </div>
+        <button class="gen-btn" id="gen-btn" onclick="generate()">
+          <span class="spinner"></span>
+          <span class="btn-text">✦ Generate</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="result-area" id="result-area">
+      <img id="result-img" alt="Generated image">
+      <div class="result-actions">
+        <button class="dl-btn" onclick="downloadImage()">⬇ Download</button>
+        <button onclick="copyImage()">📋 Copy URL</button>
+        <button onclick="shareImage()">🔗 Share</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    Powered by <a href="https://pollinations.ai" target="_blank" rel="noopener">Pollinations</a> · 
+    <a href="https://github.com/pollinations/pollinations" target="_blank" rel="noopener">Open Source</a> · 
+    <a href="https://enter.pollinations.ai/quests" target="_blank" rel="noopener">Quests →</a>
+  </footer>
+</div>
+
+<script>
+const APP_KEY = 'pk_SQIU19xEncixxWi2';
+const REDIRECT = window.location.href.split('#')[0];
+const API = 'https://gen.pollinations.ai';
+
+// ── Auth ──────────────────────────────────────────────────────────────────────
+function getKey() { try { return localStorage.getItem('pf_key') } catch { return null } }
+function setKey(k) { localStorage.setItem('pf_key', k) }
+function clearKey() { localStorage.removeItem('pf_key') }
+
+function login() {
+  const params = new URLSearchParams({
+    redirect_url: window.location.href.split('#')[0],
+    app_key: APP_KEY,
+    budget: '5',
+    models: 'flux,gpt-image-2,klein,dreamshaper,zimage,nanobanana',
+    permissions: 'profile,usage'
+  });
+  window.location.href = 'https://enter.pollinations.ai/authorize?' + params.toString();
+}
+
+function logout() {
+  clearKey();
+  document.getElementById('login-card').style.display = 'block';
+  document.getElementById('workspace').style.display = 'none';
+}
+
+// 从 URL hash 提取 key（authorize 回调）
+function extractKey() {
+  const hash = window.location.hash.substring(1);
+  if (!hash) return null;
+  const params = new URLSearchParams(hash);
+  return params.get('api_key');
+}
+
+// ── API ───────────────────────────────────────────────────────────────────────
+async function fetchProfile(apiKey) {
+  const res = await fetch(API + '/account/profile', {
+    headers: { Authorization: 'Bearer ' + apiKey }
+  });
+  if (!res.ok) throw new Error('Profile fetch failed: ' + res.status);
+  return res.json();
+}
+
+async function generate() {
+  const btn = document.getElementById('gen-btn');
+  const prompt = document.getElementById('prompt').value.trim();
+  if (!prompt) { alert('Please enter a prompt'); return; }
+  const key = getKey();
+  if (!key) { alert('Please login with Pollinations first'); return; }
+  const model = document.getElementById('model').value;
+  const size = document.getElementById('size').value;
+  const [width, height] = size.split('x');
+
+  btn.classList.add('loading');
+  btn.disabled = true;
+
+  try {
+    const url = API + '/image/' + encodeURIComponent(prompt) + '?width=' + width + '&height=' + height + '&model=' + model + '&key=' + encodeURIComponent(key);
+    document.getElementById('result-img').src = url;
+    document.getElementById('result-area').classList.add('show');
+    saveHistory(prompt, model, url);
+  } catch (err) {
+    alert('Generation failed: ' + err.message);
+  } finally {
+    btn.classList.remove('loading');
+    btn.disabled = false;
+  }
+}
+
+function downloadImage() {
+  const img = document.getElementById('result-img');
+  if (!img.src) return;
+  const a = document.createElement('a');
+  a.href = img.src;
+  a.download = 'pixel-forge-' + Date.now() + '.png';
+  a.click();
+}
+
+function copyImage() {
+  const img = document.getElementById('result-img');
+  if (!img.src) return;
+  navigator.clipboard.writeText(img.src).then(() => {
+    alert('Image URL copied!');
+  }).catch(() => {
+    prompt('Copy this URL:', img.src);
+  });
+}
+
+function shareImage() {
+  const img = document.getElementById('result-img');
+  if (!img.src) return;
+  if (navigator.share) {
+    navigator.share({ title: 'Pixel Forge', text: 'Generated with Pixel Forge', url: img.src });
+  } else {
+    copyImage();
+  }
+}
+
+// ── History (localStorage) ────────────────────────────────────────────────────
+function saveHistory(prompt, model, url) {
+  try {
+    let hist = JSON.parse(localStorage.getItem('pf_history') || '[]');
+    hist.unshift({ prompt, model, url, ts: Date.now() });
+    if (hist.length > 20) hist = hist.slice(0, 20);
+    localStorage.setItem('pf_history', JSON.stringify(hist));
+  } catch {}
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+async function init() {
+  // 检查回调
+  const apiKey = extractKey();
+  if (apiKey) {
+    setKey(apiKey);
+    window.location.hash = '';
+  }
+
+  const stored = getKey();
+  if (stored) {
+    try {
+      const profile = await fetchProfile(stored);
+      const userInfo = document.getElementById('user-info');
+      userInfo.innerHTML = (profile.avatar ? '<img src="' + profile.avatar + '" alt="">' : '') +
+        '<span>Logged in as <strong>' + (profile.githubUsername || 'User') + '</strong></span>';
+      document.getElementById('login-card').style.display = 'none';
+      document.getElementById('workspace').style.display = 'flex';
+    } catch (e) {
+      console.warn('Key invalid, showing login:', e);
+      clearKey();
+    }
+  }
+}
+init();
+</script>
+</body>
+</html>

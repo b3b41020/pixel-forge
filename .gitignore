@@ -1,0 +1,16 @@
+# Secrets / credentials — never commit these
+*.key
+*.pem
+*.p12
+.env
+.env.*
+!*.example
+
+# Local state
+.DS_Store
+node_modules/
+
+# Any file that might accidentally hold tokens
+*_key.txt
+*token*.txt
+*secret*.txt
