@@ -3,11 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pixel Forge — AI Image Studio | pollinations.ai</title>
-<meta name="description" content="Generate stunning AI images with Pixel Forge, powered by Pollinations.">
+<title>Pixel Forge — AI Image Studio</title>
+<meta name="description" content="Generate stunning AI images with Pixel Forge.">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);min-height:100vh;color:#e0e0e0;display:flex;flex-direction:column;align-items:center;padding:20px}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:
+radial-gradient(ellipse 80% 50% at 20% -10%,rgba(120,90,220,.25),transparent),
+radial-gradient(ellipse 70% 60% at 85% 0%,rgba(30,150,255,.18),transparent),
+radial-gradient(ellipse 60% 50% at 50% 110%,rgba(255,120,60,.12),transparent),
+linear-gradient(160deg,#0a0a14 0%,#12122a 45%,#1a1038 100%);
+background-attachment:fixed;min-height:100vh;color:#e0e0e0;display:flex;flex-direction:column;align-items:center;padding:20px}
 .container{max-width:960px;width:100%}
 header{text-align:center;padding:40px 0 30px;position:relative}
 .lang-toggle{position:absolute;top:16px;right:16px;display:inline-flex;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:20px;padding:4px;font-size:.8rem}
@@ -73,8 +78,6 @@ footer a:hover{text-decoration:underline}
       <button id="lang-zh" onclick="setLang('zh')">中文</button>
     </div>
     <h1>✦ Pixel Forge</h1>
-    <p data-i18n="tagline">AI image generation studio — powered by Pollinations</p>
-    <span class="badge" data-i18n="badge">⚡ Built with pollinations.ai</span>
   </header>
 
   <!-- Login Card -->
@@ -137,11 +140,7 @@ footer a:hover{text-decoration:underline}
     </div>
   </div>
 
-  <footer>
-    <span data-i18n="poweredBy">Powered by</span> <a href="https://pollinations.ai" target="_blank" rel="noopener">Pollinations</a> · 
-    <a href="https://github.com/pollinations/pollinations" target="_blank" rel="noopener" data-i18n="openSource">Open Source</a> · 
-    <a href="https://enter.pollinations.ai/quests" target="_blank" rel="noopener" data-i18n="questsLink">Quests →</a>
-  </footer>
+  <footer></footer>
 </div>
 
 <script>
@@ -152,8 +151,6 @@ const API = 'https://gen.pollinations.ai';
 // ── i18n ──────────────────────────────────────────────────────────────────────
 const I18N = {
   en: {
-    tagline: 'AI image generation studio — powered by Pollinations',
-    badge: '⚡ Built with pollinations.ai',
     loginTitle: '🔑 Get Started',
     loginDesc: 'Connect your Pollinations account to start generating. No API key needed — just a one-click authorization.',
     loginBtn: 'Login with Pollinations',
@@ -166,9 +163,6 @@ const I18N = {
     downloadBtn: '⬇ Download',
     copyBtn: '📋 Copy URL',
     shareBtn: '🔗 Share',
-    poweredBy: 'Powered by',
-    openSource: 'Open Source',
-    questsLink: 'Quests →',
     loggedInAs: 'Logged in as',
     user: 'User',
     errPrompt: 'Please enter a prompt',
@@ -178,11 +172,9 @@ const I18N = {
     copyUrl: 'Copy this URL:',
     shareTitle: 'Pixel Forge',
     shareText: 'Generated with Pixel Forge',
-    docTitle: 'Pixel Forge — AI Image Studio | pollinations.ai'
+    docTitle: 'Pixel Forge — AI Image Studio'
   },
   zh: {
-    tagline: 'AI 图像生成工坊 — 由 Pollinations 驱动',
-    badge: '⚡ 基于 pollinations.ai 构建',
     loginTitle: '🔑 开始使用',
     loginDesc: '连接你的 Pollinations 账户即可开始生成。无需填写任何密钥，一键授权即可。',
     loginBtn: '使用 Pollinations 登录',
@@ -195,9 +187,6 @@ const I18N = {
     downloadBtn: '⬇ 下载',
     copyBtn: '📋 复制链接',
     shareBtn: '🔗 分享',
-    poweredBy: '由',
-    openSource: '开源',
-    questsLink: '任务 →',
     loggedInAs: '已登录为',
     user: '用户',
     errPrompt: '请输入提示词',
@@ -207,7 +196,7 @@ const I18N = {
     copyUrl: '复制此链接:',
     shareTitle: 'Pixel Forge',
     shareText: '用 Pixel Forge 生成',
-    docTitle: 'Pixel Forge — AI 图像工坊 | pollinations.ai'
+    docTitle: 'Pixel Forge — AI 图像工坊'
   }
 };
 let currentLang = localStorage.getItem('pf_lang') || 'en';
