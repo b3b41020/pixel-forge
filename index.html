@@ -68,6 +68,27 @@ footer a{color:#667eea;text-decoration:none}
 footer a:hover{text-decoration:underline}
 /* responsive */
 @media(max-width:600px){header h1{font-size:1.8rem}.control-row .field{min-width:100%}}
+/* inspiration chips */
+.inspiration-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.chip{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:#b0b0c0;padding:5px 12px;border-radius:14px;font-size:.78rem;cursor:pointer;transition:all .18s;white-space:nowrap}
+.chip:hover{background:rgba(102,126,234,.25);border-color:#667eea;color:#fff;transform:translateY(-1px)}
+/* history gallery */
+.history-section{margin-top:8px}
+.history-section .section-title{font-size:.85rem;color:#a0a0b0;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.history-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.history-card{position:relative;border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);cursor:pointer;transition:transform .18s,box-shadow .2s}
+.history-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.4);border-color:#667eea}
+.history-card img{width:100%;height:150px;object-fit:cover;display:block}
+.history-card .hist-meta{display:none;position:absolute;bottom:0;left:0;right:0;padding:6px 8px;background:linear-gradient(transparent,rgba(0,0,0,.85));font-size:.68rem;color:#ccc;line-height:1.3}
+.history-card:hover .hist-meta{display:block}
+.history-card .hist-del{position:absolute;top:6px;right:6px;width:22px;height:22px;border-radius:50%;background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.2);color:#fff;font-size:.8rem;line-height:1;cursor:pointer;display:none;align-items:center;justify-content:center}
+.history-card:hover .hist-del{display:flex}
+.history-card .hist-del:hover{background:#e74c3c;border-color:#e74c3c}
+.history-empty{color:#666;font-size:.85rem;padding:20px;text-align:center;border:1px dashed rgba(255,255,255,.12);border-radius:12px}
+/* status line */
+.status-line{margin-top:14px;min-height:1.4em;font-size:.8rem;color:#a0a0b0;text-align:center}
+.status-line.error{color:#ff6b6b}
+.status-line.success{color:#51cf66}
 </style>
 </head>
 <body>
@@ -128,6 +149,14 @@ footer a:hover{text-decoration:underline}
           <span class="btn-text" data-i18n="genBtn">✦ Generate</span>
         </button>
       </div>
+      <div class="inspiration-row">
+        <span class="chip" onclick="useSample(this)" data-i18n-en="A neon-lit Japanese street in the rain" data-i18n-zh="雨夜霓虹闪烁的日本街道">A neon-lit Japanese street in the rain</span>
+        <span class="chip" onclick="useSample(this)" data-i18n-en="A cute corgi astronaut floating in space" data-i18n-zh="漂浮在太空中的可爱柯基宇航员">A cute corgi astronaut floating in space</span>
+        <span class="chip" onclick="useSample(this)" data-i18n-en="An oil painting of mountains at sunset" data-i18n-zh="日落时分山脉的油画">An oil painting of mountains at sunset</span>
+        <span class="chip" onclick="useSample(this)" data-i18n-en="A cyberpunk samurai with glowing katana" data-i18n-zh="手持发光武士刀的赛博朋克武士">A cyberpunk samurai with glowing katana</span>
+        <span class="chip" onclick="useSample(this)" data-i18n-en="A cozy reading nook by a fireplace" data-i18n-zh="壁炉旁温馨的阅读角">A cozy reading nook by a fireplace</span>
+      </div>
+      <div class="status-line" id="status-line"></div>
     </div>
 
     <div class="result-area" id="result-area">
@@ -137,6 +166,11 @@ footer a:hover{text-decoration:underline}
         <button onclick="copyImage()" data-i18n="copyBtn">📋 Copy URL</button>
         <button onclick="shareImage()" data-i18n="shareBtn">🔗 Share</button>
       </div>
+    </div>
+
+    <div class="history-section" id="history-section">
+      <div class="section-title" data-i18n="historyTitle">🖼️ Recent Creations</div>
+      <div class="history-grid" id="history-grid"></div>
     </div>
   </div>
 
@@ -172,7 +206,13 @@ const I18N = {
     copyUrl: 'Copy this URL:',
     shareTitle: 'Pixel Forge',
     shareText: 'Generated with Pixel Forge',
-    docTitle: 'Pixel Forge — AI Image Studio'
+    docTitle: 'Pixel Forge — AI Image Studio',
+    historyTitle: '🖼️ Recent Creations',
+    historyEmpty: 'No creations yet — generate your first image!',
+    historyDelete: 'Delete',
+    statusGen: '🎨 Generating… this can take 10–60s',
+    statusDone: '✅ Done!',
+    statusLoading: 'Loading…'
   },
   zh: {
     loginTitle: '🔑 开始使用',
@@ -196,7 +236,13 @@ const I18N = {
     copyUrl: '复制此链接:',
     shareTitle: 'Pixel Forge',
     shareText: '用 Pixel Forge 生成',
-    docTitle: 'Pixel Forge — AI 图像工坊'
+    docTitle: 'Pixel Forge — AI 图像工坊',
+    historyTitle: '🖼️ 最近生成',
+    historyEmpty: '还没有生成记录 — 来生成第一张吧！',
+    historyDelete: '删除',
+    statusGen: '🎨 生成中… 大约需要 10–60 秒',
+    statusDone: '✅ 完成!',
+    statusLoading: '加载中…'
   }
 };
 let currentLang = localStorage.getItem('pf_lang') || 'en';
@@ -219,7 +265,79 @@ function applyLang() {
     const k = el.getAttribute('data-i18n-ph');
     if (t[k]) el.placeholder = t[k];
   });
+  // chips 双语
+  document.querySelectorAll('[data-i18n-en]').forEach(el => {
+    const enText = el.getAttribute('data-i18n-en');
+    const zhText = el.getAttribute('data-i18n-zh');
+    el.textContent = currentLang === 'zh' ? zhText : enText;
+  });
   document.title = t.docTitle;
+}
+
+function useSample(el) {
+  document.getElementById('prompt').value = el.textContent;
+  document.getElementById('prompt').focus();
+}
+
+function setStatus(msg, cls) {
+  const s = document.getElementById('status-line');
+  s.textContent = msg || '';
+  s.className = 'status-line' + (cls ? ' ' + cls : '');
+}
+
+// ── History (localStorage) ────────────────────────────────────────────────────
+function saveHistory(prompt, model, url) {
+  try {
+    let hist = JSON.parse(localStorage.getItem('pf_history') || '[]');
+    hist.unshift({ prompt, model, url, ts: Date.now() });
+    if (hist.length > 20) hist = hist.slice(0, 20);
+    localStorage.setItem('pf_history', JSON.stringify(hist));
+  } catch {}
+}
+
+function renderHistory() {
+  const grid = document.getElementById('history-grid');
+  let hist = [];
+  try { hist = JSON.parse(localStorage.getItem('pf_history') || '[]'); } catch {}
+  const t = I18N[currentLang];
+  if (!hist.length) {
+    grid.innerHTML = '<div class="history-empty">' + t.historyEmpty + '</div>';
+    return;
+  }
+  grid.innerHTML = hist.map((h, i) =>
+    '<div class="history-card" onclick="loadFromHistory(' + i + ')">' +
+      '<button class="hist-del" onclick="event.stopPropagation();deleteHistory(' + i + ')" title="' + t.historyDelete + '">✕</button>' +
+      '<img loading="lazy" src="' + h.url + '" alt="">' +
+      '<div class="hist-meta">' + escapeHtml((h.prompt || '').substring(0, 60)) + '</div>' +
+    '</div>'
+  ).join('');
+}
+
+function loadFromHistory(i) {
+  let hist = [];
+  try { hist = JSON.parse(localStorage.getItem('pf_history') || '[]'); } catch {}
+  if (!hist[i]) return;
+  const h = hist[i];
+  document.getElementById('prompt').value = h.prompt;
+  if (h.model) {
+    const sel = document.getElementById('model');
+    if ([...sel.options].some(o => o.value === h.model)) sel.value = h.model;
+  }
+  document.getElementById('result-img').src = h.url;
+  document.getElementById('result-area').classList.add('show');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function deleteHistory(i) {
+  let hist = [];
+  try { hist = JSON.parse(localStorage.getItem('pf_history') || '[]'); } catch {}
+  hist.splice(i, 1);
+  localStorage.setItem('pf_history', JSON.stringify(hist));
+  renderHistory();
+}
+
+function escapeHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
 // ── Auth ──────────────────────────────────────────────────────────────────────
@@ -274,13 +392,17 @@ async function generate() {
 
   btn.classList.add('loading');
   btn.disabled = true;
+  setStatus(I18N[currentLang].statusGen);
 
   try {
     const url = API + '/image/' + encodeURIComponent(prompt) + '?width=' + width + '&height=' + height + '&model=' + model + '&key=' + encodeURIComponent(key);
     document.getElementById('result-img').src = url;
     document.getElementById('result-area').classList.add('show');
     saveHistory(prompt, model, url);
+    renderHistory();
+    setStatus(I18N[currentLang].statusDone, 'success');
   } catch (err) {
+    setStatus(I18N[currentLang].errGen + err.message, 'error');
     alert(I18N[currentLang].errGen + err.message);
   } finally {
     btn.classList.remove('loading');
@@ -319,19 +441,10 @@ function shareImage() {
   }
 }
 
-// ── History (localStorage) ────────────────────────────────────────────────────
-function saveHistory(prompt, model, url) {
-  try {
-    let hist = JSON.parse(localStorage.getItem('pf_history') || '[]');
-    hist.unshift({ prompt, model, url, ts: Date.now() });
-    if (hist.length > 20) hist = hist.slice(0, 20);
-    localStorage.setItem('pf_history', JSON.stringify(hist));
-  } catch {}
-}
-
 // ── Init ──────────────────────────────────────────────────────────────────────
 async function init() {
   applyLang();
+  renderHistory();
   // 检查回调
   const apiKey = extractKey();
   if (apiKey) {
