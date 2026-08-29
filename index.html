@@ -9,7 +9,11 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);min-height:100vh;color:#e0e0e0;display:flex;flex-direction:column;align-items:center;padding:20px}
 .container{max-width:960px;width:100%}
-header{text-align:center;padding:40px 0 30px}
+header{text-align:center;padding:40px 0 30px;position:relative}
+.lang-toggle{position:absolute;top:16px;right:16px;display:inline-flex;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:20px;padding:4px;font-size:.8rem}
+.lang-toggle button{background:transparent;border:none;color:#a0a0b0;padding:5px 14px;border-radius:16px;cursor:pointer;font-size:.8rem;transition:all .2s}
+.lang-toggle button.active{background:linear-gradient(90deg,#667eea,#764ba2);color:#fff;font-weight:600}
+.lang-toggle button:hover:not(.active){color:#e0e0e0}
 header h1{font-size:2.5rem;background:linear-gradient(90deg,#f7971e,#ffd200);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 header p{color:#a0a0b0;margin-top:8px;font-size:1rem}
 header .badge{display:inline-block;margin-top:8px;font-size:.75rem;color:#888;background:rgba(255,255,255,.05);padding:4px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.08)}
@@ -64,18 +68,22 @@ footer a:hover{text-decoration:underline}
 <body>
 <div class="container">
   <header>
+    <div class="lang-toggle" id="lang-toggle">
+      <button id="lang-en" class="active" onclick="setLang('en')">EN</button>
+      <button id="lang-zh" onclick="setLang('zh')">中文</button>
+    </div>
     <h1>✦ Pixel Forge</h1>
-    <p>AI image generation studio — powered by Pollinations</p>
-    <span class="badge">⚡ Built with pollinations.ai</span>
+    <p data-i18n="tagline">AI image generation studio — powered by Pollinations</p>
+    <span class="badge" data-i18n="badge">⚡ Built with pollinations.ai</span>
   </header>
 
   <!-- Login Card -->
   <div id="login-card">
-    <h2>🔑 Get Started</h2>
-    <p>Connect your Pollinations account to start generating. No API key needed — just a one-click authorization.</p>
+    <h2 data-i18n="loginTitle">🔑 Get Started</h2>
+    <p data-i18n="loginDesc">Connect your Pollinations account to start generating. No API key needed — just a one-click authorization.</p>
     <button class="login-btn" onclick="login()">
       <svg viewBox="0 0 20 20"><path d="M10 0C4.5 0 0 4.5 0 10s4.5 10 10 10 10-4.5 10-10S15.5 0 10 0zm3.5 7.5l-5 5L5 9l1.5-1.5 2.5 2.5 3.5-3.5L13.5 7.5z"/></svg>
-      Login with Pollinations
+      <span data-i18n="loginBtn">Login with Pollinations</span>
     </button>
   </div>
 
@@ -83,17 +91,17 @@ footer a:hover{text-decoration:underline}
   <div id="workspace">
     <div class="user-bar">
       <div class="user-info" id="user-info"></div>
-      <button class="logout-btn" onclick="logout()">Logout</button>
+      <button class="logout-btn" onclick="logout()" data-i18n="logoutBtn">Logout</button>
     </div>
 
     <div class="control-panel">
       <div class="control-row">
         <div class="field">
-          <label>Prompt</label>
-          <input type="text" id="prompt" placeholder="A majestic dragon in a cyberpunk city..." value="Friendly red panda in a forest">
+          <label data-i18n="promptLabel">Prompt</label>
+          <input type="text" id="prompt" data-i18n-ph="promptPh" placeholder="A majestic dragon in a cyberpunk city..." value="Friendly red panda in a forest">
         </div>
         <div class="field" style="flex:0 0 160px;min-width:120px">
-          <label>Model</label>
+          <label data-i18n="modelLabel">Model</label>
           <select id="model">
             <option value="flux">Flux</option>
             <option value="dreamshaper">Dreamshaper</option>
@@ -104,7 +112,7 @@ footer a:hover{text-decoration:underline}
           </select>
         </div>
         <div class="field" style="flex:0 0 140px;min-width:100px">
-          <label>Size</label>
+          <label data-i18n="sizeLabel">Size</label>
           <select id="size">
             <option value="1024x1024">1024×1024</option>
             <option value="1024x768">1024×768</option>
@@ -114,25 +122,25 @@ footer a:hover{text-decoration:underline}
         </div>
         <button class="gen-btn" id="gen-btn" onclick="generate()">
           <span class="spinner"></span>
-          <span class="btn-text">✦ Generate</span>
+          <span class="btn-text" data-i18n="genBtn">✦ Generate</span>
         </button>
       </div>
     </div>
 
     <div class="result-area" id="result-area">
-      <img id="result-img" alt="Generated image">
+      <img id="result-img" alt="">
       <div class="result-actions">
-        <button class="dl-btn" onclick="downloadImage()">⬇ Download</button>
-        <button onclick="copyImage()">📋 Copy URL</button>
-        <button onclick="shareImage()">🔗 Share</button>
+        <button class="dl-btn" onclick="downloadImage()" data-i18n="downloadBtn">⬇ Download</button>
+        <button onclick="copyImage()" data-i18n="copyBtn">📋 Copy URL</button>
+        <button onclick="shareImage()" data-i18n="shareBtn">🔗 Share</button>
       </div>
     </div>
   </div>
 
   <footer>
-    Powered by <a href="https://pollinations.ai" target="_blank" rel="noopener">Pollinations</a> · 
-    <a href="https://github.com/pollinations/pollinations" target="_blank" rel="noopener">Open Source</a> · 
-    <a href="https://enter.pollinations.ai/quests" target="_blank" rel="noopener">Quests →</a>
+    <span data-i18n="poweredBy">Powered by</span> <a href="https://pollinations.ai" target="_blank" rel="noopener">Pollinations</a> · 
+    <a href="https://github.com/pollinations/pollinations" target="_blank" rel="noopener" data-i18n="openSource">Open Source</a> · 
+    <a href="https://enter.pollinations.ai/quests" target="_blank" rel="noopener" data-i18n="questsLink">Quests →</a>
   </footer>
 </div>
 
@@ -140,6 +148,90 @@ footer a:hover{text-decoration:underline}
 const APP_KEY = 'pk_SQIU19xEncixxWi2';
 const REDIRECT = window.location.href.split('#')[0];
 const API = 'https://gen.pollinations.ai';
+
+// ── i18n ──────────────────────────────────────────────────────────────────────
+const I18N = {
+  en: {
+    tagline: 'AI image generation studio — powered by Pollinations',
+    badge: '⚡ Built with pollinations.ai',
+    loginTitle: '🔑 Get Started',
+    loginDesc: 'Connect your Pollinations account to start generating. No API key needed — just a one-click authorization.',
+    loginBtn: 'Login with Pollinations',
+    logoutBtn: 'Logout',
+    promptLabel: 'Prompt',
+    promptPh: 'A majestic dragon in a cyberpunk city...',
+    modelLabel: 'Model',
+    sizeLabel: 'Size',
+    genBtn: '✦ Generate',
+    downloadBtn: '⬇ Download',
+    copyBtn: '📋 Copy URL',
+    shareBtn: '🔗 Share',
+    poweredBy: 'Powered by',
+    openSource: 'Open Source',
+    questsLink: 'Quests →',
+    loggedInAs: 'Logged in as',
+    user: 'User',
+    errPrompt: 'Please enter a prompt',
+    errLogin: 'Please login with Pollinations first',
+    errGen: 'Generation failed: ',
+    copied: 'Image URL copied!',
+    copyUrl: 'Copy this URL:',
+    shareTitle: 'Pixel Forge',
+    shareText: 'Generated with Pixel Forge',
+    docTitle: 'Pixel Forge — AI Image Studio | pollinations.ai'
+  },
+  zh: {
+    tagline: 'AI 图像生成工坊 — 由 Pollinations 驱动',
+    badge: '⚡ 基于 pollinations.ai 构建',
+    loginTitle: '🔑 开始使用',
+    loginDesc: '连接你的 Pollinations 账户即可开始生成。无需填写任何密钥，一键授权即可。',
+    loginBtn: '使用 Pollinations 登录',
+    logoutBtn: '退出登录',
+    promptLabel: '提示词',
+    promptPh: '赛博朋克城市中的一条雄伟巨龙...',
+    modelLabel: '模型',
+    sizeLabel: '尺寸',
+    genBtn: '✦ 生成',
+    downloadBtn: '⬇ 下载',
+    copyBtn: '📋 复制链接',
+    shareBtn: '🔗 分享',
+    poweredBy: '由',
+    openSource: '开源',
+    questsLink: '任务 →',
+    loggedInAs: '已登录为',
+    user: '用户',
+    errPrompt: '请输入提示词',
+    errLogin: '请先使用 Pollinations 登录',
+    errGen: '生成失败: ',
+    copied: '图片链接已复制!',
+    copyUrl: '复制此链接:',
+    shareTitle: 'Pixel Forge',
+    shareText: '用 Pixel Forge 生成',
+    docTitle: 'Pixel Forge — AI 图像工坊 | pollinations.ai'
+  }
+};
+let currentLang = localStorage.getItem('pf_lang') || 'en';
+
+function setLang(lang) {
+  currentLang = lang;
+  localStorage.setItem('pf_lang', lang);
+  applyLang();
+}
+
+function applyLang() {
+  const t = I18N[currentLang];
+  document.getElementById('lang-en').classList.toggle('active', currentLang === 'en');
+  document.getElementById('lang-zh').classList.toggle('active', currentLang === 'zh');
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const k = el.getAttribute('data-i18n');
+    if (t[k]) el.textContent = t[k];
+  });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+    const k = el.getAttribute('data-i18n-ph');
+    if (t[k]) el.placeholder = t[k];
+  });
+  document.title = t.docTitle;
+}
 
 // ── Auth ──────────────────────────────────────────────────────────────────────
 function getKey() { try { return localStorage.getItem('pf_key') } catch { return null } }
@@ -183,9 +275,10 @@ async function fetchProfile(apiKey) {
 async function generate() {
   const btn = document.getElementById('gen-btn');
   const prompt = document.getElementById('prompt').value.trim();
-  if (!prompt) { alert('Please enter a prompt'); return; }
+  const t = I18N[currentLang];
+  if (!prompt) { alert(t.errPrompt); return; }
   const key = getKey();
-  if (!key) { alert('Please login with Pollinations first'); return; }
+  if (!key) { alert(t.errLogin); return; }
   const model = document.getElementById('model').value;
   const size = document.getElementById('size').value;
   const [width, height] = size.split('x');
@@ -199,7 +292,7 @@ async function generate() {
     document.getElementById('result-area').classList.add('show');
     saveHistory(prompt, model, url);
   } catch (err) {
-    alert('Generation failed: ' + err.message);
+    alert(I18N[currentLang].errGen + err.message);
   } finally {
     btn.classList.remove('loading');
     btn.disabled = false;
@@ -218,18 +311,20 @@ function downloadImage() {
 function copyImage() {
   const img = document.getElementById('result-img');
   if (!img.src) return;
+  const t = I18N[currentLang];
   navigator.clipboard.writeText(img.src).then(() => {
-    alert('Image URL copied!');
+    alert(t.copied);
   }).catch(() => {
-    prompt('Copy this URL:', img.src);
+    prompt(t.copyUrl, img.src);
   });
 }
 
 function shareImage() {
   const img = document.getElementById('result-img');
   if (!img.src) return;
+  const t = I18N[currentLang];
   if (navigator.share) {
-    navigator.share({ title: 'Pixel Forge', text: 'Generated with Pixel Forge', url: img.src });
+    navigator.share({ title: t.shareTitle, text: t.shareText, url: img.src });
   } else {
     copyImage();
   }
@@ -247,6 +342,7 @@ function saveHistory(prompt, model, url) {
 
 // ── Init ──────────────────────────────────────────────────────────────────────
 async function init() {
+  applyLang();
   // 检查回调
   const apiKey = extractKey();
   if (apiKey) {
@@ -259,8 +355,9 @@ async function init() {
     try {
       const profile = await fetchProfile(stored);
       const userInfo = document.getElementById('user-info');
+      const t = I18N[currentLang];
       userInfo.innerHTML = (profile.avatar ? '<img src="' + profile.avatar + '" alt="">' : '') +
-        '<span>Logged in as <strong>' + (profile.githubUsername || 'User') + '</strong></span>';
+        '<span>' + t.loggedInAs + ' <strong>' + (profile.githubUsername || t.user) + '</strong></span>';
       document.getElementById('login-card').style.display = 'none';
       document.getElementById('workspace').style.display = 'flex';
     } catch (e) {
